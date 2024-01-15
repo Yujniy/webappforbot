@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
-    <title>Web App</title>
+    <title>My Telegram Bot</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-      function sendData() {
-        const formData = new FormData(document.querySelector('form'));
-        const data = {};
-        for(let [key, value] of formData.entries()) {
-          data[key] = value;
-        }
-        const jsonData = JSON.stringify(data);
-        TgWebApp.sendData(jsonData);
-      }
-    </script>
   </head>
   <body>
-    <form>
-      <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name"><br>
-      <label for="email">Email:</label><br>
-      <input type="email" id="email" name="email"><br>
-      <input type="button" value="Send Data" onclick="sendData()">
-    </form>
+    <h1>Welcome to my Telegram Bot!</h1>
+    <button id="startButton">Start</button>
+    <script>
+      // Initialize the Telegram Web App
+      window.Telegram.WebApp.initData = {
+        bot_username: 'mybot',
+        query_id: '1234567890'
+      };
+      window.Telegram.WebApp.ready();
+
+      // Add a listener for the start button
+      document.getElementById('startButton').addEventListener('click', function() {
+        // Send a request to the bot to start
+        window.Telegram.WebApp.sendData({
+          command: 'start'
+        });
+      });
+    </script>
   </body>
 </html>
