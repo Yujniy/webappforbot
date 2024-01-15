@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Send Message with Telegram Bot</title>
+    <meta charset="UTF-8" />
+    <title>Web App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      function sendData() {
+        const formData = new FormData(document.querySelector('form'));
+        const data = {};
+        for(let [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+        const jsonData = JSON.stringify(data);
+        TgWebApp.sendData(jsonData);
+      }
+    </script>
   </head>
   <body>
-    <h1>Enter your name:</h1>
-    <form id="name-form">
-      <input type="text" id="name" name="name" required>
-      <button type="submit">Send Message</button>
+    <form>
+      <label for="name">Name:</label><br>
+      <input type="text" id="name" name="name"><br>
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email"><br>
+      <input type="button" value="Send Data" onclick="sendData()">
     </form>
-    <script>
-      const form = document.getElementById('name-form');
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const name = encodeURIComponent(form.name.value);
-        const response = await fetch(`https://api.telegram.org/bot<YOUR_BOT_TOKEN>/sendMessage?chat_id=<YOUR_CHAT_ID>&text=Hello,%20${name}!`);
-        const data = await response.json();
-        if (data.ok) {
-          alert('Message sent!');
-        } else {
-          alert('Error sending message.');
-        }
-      });
-    </script>
   </body>
 </html>
