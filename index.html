@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Name Entry Form</title>
+    <title>python-telegram-bot Example WebApp</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: var(--tg-theme-bg-color);
+            color: var(--tg-theme-fg-color);
+        }
+    </style>
 </head>
 <body>
-    <form id="nameForm">
-        <label for="name">Enter your name:</label><br>
-        <input type="text" id="name" name="name"><br>
-        <input type="submit" value="Submit">
-    </form>
+    <input type="text" id="username" placeholder="Enter your name">
+    <button onclick="sendName()">Submit</button>
 
     <script type="text/javascript">
-        document.getElementById('nameForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const name = document.getElementById('name').value;
-            const data = JSON.stringify({name: name});
+        function sendName() {
+            const username = document.getElementById('username').value;
+            const data = JSON.stringify({name: username});
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
-        });
+        }
     </script>
 </body>
 </html>
-
