@@ -4,12 +4,6 @@
     <meta charset="UTF-8">
     <title>Name Entry Form</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-        }
-    </style>
 </head>
 <body>
     <form id="nameForm">
@@ -23,17 +17,10 @@
             event.preventDefault();
             const name = document.getElementById('name').value;
             const data = JSON.stringify({name: name});
-
-            // Set the submit button as a PopupButton
-            Telegram.WebApp.setPopupButton({
-                id: 'submit',
-                type: 'default',
-                text: 'Submit',
-            });
-
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         });
     </script>
 </body>
 </html>
+
