@@ -13,7 +13,6 @@
 </head>
 <body>
     <input type="text" id="username" placeholder="Enter your name">
-    <button onclick="sendName()">Submit</button>
 
     <script type="text/javascript">
         function sendName() {
@@ -22,6 +21,9 @@
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }
+
+        // Set the main button
+        Telegram.WebApp.MainButton.setText('Submit').show().onClick(sendName);
     </script>
 </body>
 </html>
