@@ -12,18 +12,24 @@
     </style>
 </head>
 <body>
-    <input type="text" id="username" placeholder="Enter your name">
+    <input type="text" id="username" placeholder="Enter your name" onkeyup="checkInput()">
 
     <script type="text/javascript">
+        function checkInput() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                Telegram.WebApp.MainButton.setText('Submit').show().onClick(sendName);
+            } else {
+                Telegram.WebApp.MainButton.hide();
+            }
+        }
+
         function sendName() {
             const username = document.getElementById('username').value;
             const data = JSON.stringify({name: username});
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }
-
-        // Set the main button
-        Telegram.WebApp.MainButton.setText('Submit').show().onClick(sendName);
     </script>
 </body>
 </html>
