@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>python-telegram-bot Example WebApp</title>
@@ -11,19 +12,34 @@
         }
     </style>
 </head>
+
 <body>
     <input type="text" id="username" placeholder="Enter your name">
 
     <script type="text/javascript">
+        // Hide the main button initially
+        Telegram.WebApp.MainButton.hide();
+
+        document.getElementById('username').addEventListener('input', function () {
+            // Show the main button when the user starts typing
+            if (this.value !== '') {
+                Telegram.WebApp.MainButton.show();
+            } else {
+                // Hide the main button when the user clears the input field
+                Telegram.WebApp.MainButton.hide();
+            }
+        });
+
         function sendName() {
             const username = document.getElementById('username').value;
-            const data = JSON.stringify({name: username});
+            const data = JSON.stringify({ name: username });
             Telegram.WebApp.sendData(data);
             Telegram.WebApp.close();
         }
 
         // Set the main button
-        Telegram.WebApp.MainButton.setText('Submit').show().onClick(sendName);
+        Telegram.WebApp.MainButton.setText('Submit').onClick(sendName);
     </script>
 </body>
+
 </html>
