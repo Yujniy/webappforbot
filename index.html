@@ -59,8 +59,36 @@
                 updateTheme(Telegram.WebApp.themeParams);
             });
 
-            // Existing code for Telegram Web App functionality
-            // ...
+            // Обработчик события изменения текста в поле ввода имени пользователя
+            nameInput.addEventListener('input', function() {
+                updateMainButtonVisibility(); // Обновляем видимость основной кнопки
+            });
+
+            // Функция для обновления видимости MainButton
+            function updateMainButtonVisibility() {
+                if (nameInput.value.trim()) {
+                    Telegram.WebApp.MainButton.show();
+                } else {
+                    Telegram.WebApp.MainButton.hide();
+                }
+            }
+
+            // Настройка текста, цветов и видимости основной кнопки
+            Telegram.WebApp.MainButton.text = 'Отправить';
+            Telegram.WebApp.MainButton.color = '#34a853';
+            Telegram.WebApp.MainButton.textColor = '#ffffff';
+            updateMainButtonVisibility(); // Вызываем изначально, чтобы скрыть кнопку
+
+            // Обработчик события клика на основную кнопку
+            Telegram.WebApp.MainButton.onClick(function() {
+                var name = nameInput.value.trim();
+                if (name) {
+                    // Отправка имени обратно в бота
+                    Telegram.WebApp.sendData(name);
+                } else {
+                    alert('Пожалуйста, введите ваше имя.');
+                }
+            });
 
             // Signal Telegram about the readiness of our Web App
             Telegram.WebApp.ready();
