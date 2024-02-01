@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мини приложение Telegram</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
+    <style id="themeStyle">
         body {
             display: flex;
             flex-direction: column;
@@ -13,7 +13,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
+            transition: background-color .3s, color .3s;
         }
         .app-container {
             text-align: center;
@@ -23,6 +23,7 @@
             padding: 10px;
             font-size: 16px;
             width: 80%;
+            transition: background-color .3s, color .3s;
         }
     </style>
 </head>
@@ -34,36 +35,48 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var nameInput = document.getElementById('nameInput');
+            var themeStyle = document.getElementById('themeStyle');
 
-            // Настройте основную кнопку для отправки данных
+            function updateTheme() {
+                var bodyStyles = `body { background-color: ${Telegram.WebApp.themeParams.bg_color}; color: ${Telegram.WebApp.themeParams.text_color}; }`;
+                var inputStyles = `input { background-color: ${Telegram.WebApp.themeParams.button_color}; color: ${Telegram.WebApp.themeParams.text_color}; }`;
+                
+                themeStyle.innerHTML = bodyStyles + inputStyles;
+            }
+
+            function updateMainButtonVisibility() {
+                if (nameInput.value.trim()) {
+                    Telegram.WebApp.MainButton.show();
+                } else {
+                    Telegram.WebApp.MainButton.hide();
+                }
+            }
+
+            // Настройка основной кнопки
             Telegram.WebApp.MainButton.text = 'Отправить';
-            Telegram.WebApp.MainButton.color = '#34a853';
-            Telegram.WebApp.MainButton.textColor = '#ffffff';
-            Telegram.WebApp.MainButton.show();
+            // Изначальное скрытие кнопки
+            updateMainButtonVisibility();
+            
+            // Обновляем тему
+            updateTheme();
+
+            // Обработчик события клика на основную кнопку
             Telegram.WebApp.MainButton.onClick(function() {
                 var name = nameInput.value.trim();
                 if (name) {
-                    // Отправка имени обратно в бота
                     Telegram.WebApp.sendData(name);
-                    
-                    // В качестве альтернативы, если 'sendData' недостаточно,
-                    // можно использовать 'sendMessage'. Это может потребовать дополнительных настроек на стороне бота.
-                    // Telegram.WebApp.sendMessage(name);
                 } else {
                     alert('Пожалуйста, введите ваше имя.');
                 }
             });
 
-            // Дополнительно, если хотите действовать при клике на MainButton без использования MainButton.onClick
-            Telegram.WebApp.onEvent('mainButtonClicked', function() {
-                var name = nameInput.value.trim();
-                if (name) {
-                    Telegram.WebApp.sendData(name);
-                    // или Telegram.WebApp.sendMessage(name);
-                }
-            });
+            // Обработчик изменений в поле ввода
+            nameInput.addEventListener('input', updateMainButtonVisibility);
 
-            // Готовность приложения
+            // Подписываемся на изменение темы
+            Telegram.WebApp.onEvent('themeChanged', updateTheme);
+
+            // Сигнализируем Telegram о готовности нашего Веб-приложения
             Telegram.WebApp.ready();
         });
     </script>
