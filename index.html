@@ -1,49 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App with MainButton</title>
+    <title>Telegram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <input type="text" id="nameInput" placeholder="Enter your name"/>
+    <input type="text" id="nameInput" placeholder="Введите ваше имя"/>
     <script>
-      // Disabling the MainButton until the name is entered
-      Telegram.WebApp.MainButton.setDisabled(true);
+      // Изначально скрываем MainButton
+      Telegram.WebApp.MainButton.hide();
 
-      // Event to enable the MainButton when the user starts typing
+      // Событие для показа MainButton когда пользователь начинает вводить текст
       document.getElementById('nameInput').addEventListener('input', function(event) {
         const name = event.target.value.trim();
-        Telegram.WebApp.MainButton.setDisabled(name.length === 0);
-      });
-
-      // Define the action for the MainButton
-      Telegram.WebApp.MainButton.onClick(function() {
-        var name = document.getElementById('nameInput').value.trim();
-        if (name.length > 0) {
-          Telegram.WebApp.sendData(name);
+        if(name.length > 0) {
+          Telegram.WebApp.MainButton.show();
+          Telegram.WebApp.MainButton.setText('Отправить боту');
+          Telegram.WebApp.MainButton.enable();
         } else {
-          alert("Please enter your name.");
+          Telegram.WebApp.MainButton.hide();
         }
       });
 
-      // Set up the MainButton text
-      Telegram.WebApp.MainButton.setText('Submit');
+      // Определяем действие для MainButton
+      Telegram.WebApp.MainButton.onClick(function() {
+        var name = document.getElementById('nameInput').value.trim();
+        if(name.length > 0) {
+          Telegram.WebApp.sendData(name);
+        } else {
+          alert("Пожалуйста, введите ваше имя.");
+        }
+      });
 
-      // When your web app is fully loaded
+      // Когда ваше веб-приложение полностью загружено
       Telegram.WebApp.ready();
 
-      // Listen for theme changes and apply the background color accordingly
+      // Слушаем изменение темы и соответствующим образом применяем цвет фона
       Telegram.WebApp.onEvent('themeChanged', function() {
-        // Get the current theme parameters from Telegram
+        // Получаем текущие параметры темы от Telegram
         const themeParams = Telegram.WebApp.themeParams;
         
-        // Set the Mini App body background color to match the Telegram theme background color
+        // Устанавливаем цвет фона для Mini App в соответствии с цветом фона темы Telegram
         document.body.style.backgroundColor = themeParams.bg_color;
       });
 
-      // Apply the initial theme
+      // Применяем начальную тему
       document.body.style.backgroundColor = Telegram.WebApp.themeParams.bg_color;
     </script>
 </body>
