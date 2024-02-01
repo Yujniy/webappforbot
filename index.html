@@ -46,13 +46,17 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
+            function containsAtLeastOneLetter(input) {
+                return /[a-zA-Zа-яА-ЯёЁ]/.test(input);
+            }
+
             // Update CSS variables based on Telegram theme
             function updateTheme(params) {
                 const rootStyle = document.documentElement.style;
-                rootStyle.setProperty('--tg-theme-bg-color', `#${params.bg_color}`);
-                rootStyle.setProperty('--tg-theme-text-color', `#${params.text_color}`);
-                rootStyle.setProperty('--tg-theme-secondary-bg-color', `#${params.secondary_bg_color}`);
-                rootStyle.setProperty('--tg-theme-section-header-text-color', `#${params.section_header_text_color}`);
+                rootStyle.setProperty('--tg-theme-bg-color', params.bg_color);
+                rootStyle.setProperty('--tg-theme-text-color', params.text_color);
+                rootStyle.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color);
+                rootStyle.setProperty('--tg-theme-section-header-text-color', params.section_header_text_color);
             }
 
             // Set initial theme
@@ -81,6 +85,8 @@
                 var enteredName = nameInput.value.trim();
                 if (!enteredName) {
                     alert('Пожалуйста, введите ваше имя.');
+                } else if (!containsAtLeastOneLetter(enteredName)) {
+                    alert('Введите хотя бы одну букву.');
                 } else {
                     // Everything is fine, send data
                     Telegram.WebApp.sendData(enteredName);
