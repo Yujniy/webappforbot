@@ -24,49 +24,46 @@
             font-size: 16px;
             width: 80%;
         }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <input type="text" id="nameInput" placeholder="Введите ваше имя">
-        <button id="sendButton">Отправить</button>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var nameInput = document.getElementById('nameInput');
-            var sendButton = document.getElementById('sendButton');
 
-            sendButton.addEventListener('click', function() {
+            // Настройте основную кнопку для отправки данных
+            Telegram.WebApp.MainButton.text = 'Отправить';
+            Telegram.WebApp.MainButton.color = '#34a853';
+            Telegram.WebApp.MainButton.textColor = '#ffffff';
+            Telegram.WebApp.MainButton.show();
+            Telegram.WebApp.MainButton.onClick(function() {
                 var name = nameInput.value.trim();
                 if (name) {
+                    // Отправка имени обратно в бота
                     Telegram.WebApp.sendData(name);
+                    
+                    // В качестве альтернативы, если 'sendData' недостаточно,
+                    // можно использовать 'sendMessage'. Это может потребовать дополнительных настроек на стороне бота.
+                    // Telegram.WebApp.sendMessage(name);
                 } else {
                     alert('Пожалуйста, введите ваше имя.');
                 }
             });
 
+            // Дополнительно, если хотите действовать при клике на MainButton без использования MainButton.onClick
             Telegram.WebApp.onEvent('mainButtonClicked', function() {
                 var name = nameInput.value.trim();
                 if (name) {
                     Telegram.WebApp.sendData(name);
+                    // или Telegram.WebApp.sendMessage(name);
                 }
             });
 
-            // Close the WebApp after use, if needed
-            // Telegram.WebApp.close();
-
-            // Customize the appearance of the Telegram interface.
-            Telegram.WebApp.MainButton.text = 'Отправить';
-            Telegram.WebApp.MainButton.color = '#34a853';
-            Telegram.WebApp.MainButton.textColor = '#ffffff';
-            Telegram.WebApp.MainButton.show();
-            
+            // Готовность приложения
             Telegram.WebApp.ready();
         });
     </script>
