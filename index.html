@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>python-telegram-bot Example WebApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App with MainButton</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-fg-color);
-        }
-    </style>
 </head>
-
 <body>
-    <input type="text" id="username" placeholder="Enter your name">
+    <input type="text" id="nameInput" placeholder="Enter your name"/>
+    <script>
+      // Disabling the MainButton until the name is entered
+      Telegram.WebApp.MainButton.setDisabled(true);
 
-    <script type="text/javascript">
-        // Hide the main button initially
-        Telegram.WebApp.MainButton.hide();
+      // Event to enable the MainButton when the user starts typing
+      document.getElementById('nameInput').addEventListener('input', function(event) {
+        const name = event.target.value.trim();
+        Telegram.WebApp.MainButton.setDisabled(name.length === 0);
+      });
 
-        document.getElementById('username').addEventListener('input', function () {
-            // Show the main button when the user starts typing
-            if (this.value !== '') {
-                Telegram.WebApp.MainButton.show();
-            } else {
-                // Hide the main button when the user clears the input field
-                Telegram.WebApp.MainButton.hide();
-            }
-        });
-
-        function sendName() {
-            const username = document.getElementById('username').value;
-            const data = JSON.stringify({ name: username });
-            Telegram.WebApp.sendData(data);
-            Telegram.WebApp.close();
+      // Define the action for the MainButton
+      Telegram.WebApp.MainButton.onClick(function() {
+        var name = document.getElementById('nameInput').value.trim();
+        if (name.length > 0) {
+          Telegram.WebApp.sendData(name);
+        } else {
+          alert("Please enter your name.");
         }
+      });
 
-        // Set the main button
-        Telegram.WebApp.MainButton.setText('Submit').onClick(sendName);
+      // Set up the MainButton text
+      Telegram.WebApp.MainButton.setText('Submit');
+
+      // When your web app is fully loaded
+      Telegram.WebApp.ready();
+
+      // Listen for theme changes and apply the background color accordingly
+      Telegram.WebApp.onEvent('themeChanged', function() {
+        // Get the current theme parameters from Telegram
+        const themeParams = Telegram.WebApp.themeParams;
+        
+        // Set the Mini App body background color to match the Telegram theme background color
+        document.body.style.backgroundColor = themeParams.bg_color;
+      });
+
+      // Apply the initial theme
+      document.body.style.backgroundColor = Telegram.WebApp.themeParams.bg_color;
     </script>
 </body>
-
 </html>
