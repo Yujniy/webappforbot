@@ -23,7 +23,6 @@
             padding: 10px;
             font-size: 16px;
             width: 80%;
-            transition: background-color .3s, color .3s;
         }
     </style>
 </head>
@@ -39,9 +38,7 @@
 
             function updateTheme() {
                 var bodyStyles = `body { background-color: ${Telegram.WebApp.themeParams.bg_color}; color: ${Telegram.WebApp.themeParams.text_color}; }`;
-                var inputStyles = `input { background-color: ${Telegram.WebApp.themeParams.button_color}; color: ${Telegram.WebApp.themeParams.text_color}; }`;
-                
-                themeStyle.innerHTML = bodyStyles + inputStyles;
+                themeStyle.innerHTML = bodyStyles;
             }
 
             function updateMainButtonVisibility() {
