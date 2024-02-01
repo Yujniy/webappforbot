@@ -24,15 +24,22 @@
         }
       });
 
-      // Определяем действие для MainButton
-      Telegram.WebApp.MainButton.onClick(function() {
-        var name = document.getElementById('nameInput').value.trim();
-        if(name.length > 0) {
-          Telegram.WebApp.sendData(name);
-        } else {
-          alert("Пожалуйста, введите ваше имя.");
-        }
-      });
+  // Определяем действие для MainButton
+  Telegram.WebApp.MainButton.onClick(function() {
+    var name = document.getElementById('nameInput').value.trim();
+    if(name.length > 0) {
+      // Создаём объект с данными
+      var data = {
+        name: name
+      };
+      // Преобразуем данные в строку JSON
+      var jsonData = JSON.stringify(data);
+      // Отправляем строку JSON через Telegram.WebApp.sendData()
+      Telegram.WebApp.sendData(jsonData);
+    } else {
+      alert("Пожалуйста, введите ваше имя.");
+    }
+  });
 
       // Когда ваше веб-приложение полностью загружено
       Telegram.WebApp.ready();
