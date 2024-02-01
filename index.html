@@ -1,41 +1,74 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Telegram Web App</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-  body { text-align: center; padding-top: 50px; }
-  input, button { margin: 10px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини приложение Telegram</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .app-container {
+            text-align: center;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 80%;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Введите ваше имя</h1>
-<input type="text" id="nameInput" placeholder="Ваше имя">
-<button id="mainButton">Отправить</button>
+    <div class="app-container">
+        <input type="text" id="nameInput" placeholder="Введите ваше имя">
+        <button id="sendButton">Отправить</button>
+    </div>
 
-<script>
-  // Инициализируем веб-приложение
-  const webApp = new Telegram.WebApp();
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var nameInput = document.getElementById('nameInput');
+            var sendButton = document.getElementById('sendButton');
 
-  // Подключаем обработчик события для кнопки
-  document.getElementById('mainButton').addEventListener('click', function() {
-    const name = document.getElementById('nameInput').value;
-    if(name) {
-      // Отправляем данные боту
-      webApp.sendData(name);
-    }
-  });
+            sendButton.addEventListener('click', function() {
+                var name = nameInput.value.trim();
+                if (name) {
+                    Telegram.WebApp.sendData(name);
+                } else {
+                    alert('Пожалуйста, введите ваше имя.');
+                }
+            });
 
-  // При получении сообщения от бота
-  webApp.onEvent('mainButtonClicked', function() {
-    // Активируем кнопку отправки данных
-    webApp.MainButton.setActive(true);
-  });
+            Telegram.WebApp.onEvent('mainButtonClicked', function() {
+                var name = nameInput.value.trim();
+                if (name) {
+                    Telegram.WebApp.sendData(name);
+                }
+            });
 
-  // Дополнительные настройки для веб-приложения
-  webApp.ready();
-</script>
+            // Close the WebApp after use, if needed
+            // Telegram.WebApp.close();
+
+            // Customize the appearance of the Telegram interface.
+            Telegram.WebApp.MainButton.text = 'Отправить';
+            Telegram.WebApp.MainButton.color = '#34a853';
+            Telegram.WebApp.MainButton.textColor = '#ffffff';
+            Telegram.WebApp.MainButton.show();
+            
+            Telegram.WebApp.ready();
+        });
+    </script>
 </body>
 </html>
