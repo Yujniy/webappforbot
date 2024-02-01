@@ -43,69 +43,72 @@
         <input type="text" id="nameInput" placeholder="Введите ваше имя">
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-            function containsAtLeastOneLetter(input) {
-                return /[a-zA-Zа-яА-ЯёЁ]/.test(input);
-            }
+        function containsAtLeastOneLetter(input) {
+            return /[a-zA-Zа-яА-ЯёЁ]/.test(input);
+        }
 
-            // Update CSS variables based on Telegram theme
-            function updateTheme(params) {
-                const rootStyle = document.documentElement.style;
-                rootStyle.setProperty('--tg-theme-bg-color', params.bg_color);
-                rootStyle.setProperty('--tg-theme-text-color', params.text_color);
-                rootStyle.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color);
-                rootStyle.setProperty('--tg-theme-section-header-text-color', params.section_header_text_color);
-            }
+        // Update CSS variables based on Telegram theme
+        function updateTheme(params) {
+            const rootStyle = document.documentElement.style;
+            rootStyle.setProperty('--tg-theme-bg-color', params.bg_color);
+            rootStyle.setProperty('--tg-theme-text-color', params.text_color);
+            rootStyle.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color);
+            rootStyle.setProperty('--tg-theme-section-header-text-color', params.section_header_text_color);
+        }
 
-            // Set initial theme
-            if (Telegram.WebApp.themeParams) {
-                updateTheme(Telegram.WebApp.themeParams);
-            }
+        // Set initial theme
+        if (Telegram.WebApp.themeParams) {
+            updateTheme(Telegram.WebApp.themeParams);
+        }
 
-            // Listen for theme changes
-            Telegram.WebApp.onEvent('themeChanged', function(themeParams) {
-                updateTheme(themeParams);
-            });
+        // Listen for theme changes
+        Telegram.WebApp.onEvent('themeChanged', function(themeParams) {
+            updateTheme(themeParams);
+        });
 
-            var nameInput = document.getElementById('nameInput');
+        var nameInput = document.getElementById('nameInput');
 
-            // Listen for input changes to control the visibility of the main button
-            nameInput.addEventListener('input', function() {
-                if (nameInput.value.trim()) {
-                    Telegram.WebApp.MainButton.show();
-                } else {
-                    Telegram.WebApp.MainButton.hide();
-                }
-            });
-
-            // Handle clicking on the main button
-            Telegram.WebApp.MainButton.onClick(function() {
-                var enteredName = nameInput.value.trim();
-                if (!enteredName) {
-                    alert('Пожалуйста, введите ваше имя.');
-                } else if (!containsAtLeastOneLetter(enteredName)) {
-                    alert('Введите хотя бы одну букву.');
-                } else {
-                    // Everything is fine, send data
-                    Telegram.WebApp.sendData(enteredName);
-                }
-            });
-
-            // Set up the main button visibility on load
+        // Listen for input changes to control the visibility of the main button
+        nameInput.addEventListener('input', function() {
             if (nameInput.value.trim()) {
                 Telegram.WebApp.MainButton.show();
             } else {
                 Telegram.WebApp.MainButton.hide();
             }
-            Telegram.WebApp.MainButton.text = 'Отправить';
-            Telegram.WebApp.MainButton.color = '#34a853';
-            Telegram.WebApp.MainButton.textColor = '#ffffff';
-
-            // Signal Telegram about the readiness of our Web App
-            Telegram.WebApp.ready();
         });
-    </script>
+
+        // Handle clicking on the main button
+        Telegram.WebApp.MainButton.onClick(function() {
+            var enteredName = nameInput.value.trim();
+            if (!enteredName) {
+                alert('Пожалуйста, введите ваше имя.');
+            } else if (!containsAtLeastOneLetter(enteredName)) {
+                alert('Введите хотя бы одну букву.');
+            } else if (/^\d+$/.test(enteredName)) {
+                alert('К сожалению отправка имени без букв не возможна, добавьте буквы');
+            } else {
+                // Everything is fine, send data
+                Telegram.WebApp.sendData(enteredName);
+            }
+        });
+
+        // Set up the main button visibility on load
+        if (nameInput.value.trim()) {
+            Telegram.WebApp.MainButton.show();
+        } else {
+            Telegram.WebApp.MainButton.hide();
+        }
+
+        Telegram.WebApp.MainButton.text = 'Отправить';
+        Telegram.WebApp.MainButton.color = '#34a853';
+        Telegram.WebApp.MainButton.textColor = '#ffffff';
+
+        // Signal Telegram about the readiness of our Web App
+        Telegram.WebApp.ready();
+    });
+</script>
 </body>
 </html>
