@@ -29,6 +29,39 @@
             color: var(--tg-theme-text-color);
             border: 1px solid var(--tg-theme-section-header-text-color);
         }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 100px; /* Location of the box */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
         /* Add additional styling as needed to match Telegram theme */
     </style>
 </head>
@@ -36,10 +69,20 @@
     <div class="app-container">
         <input type="text" id="nameInput" placeholder="Введите ваше имя">
     </div>
+    
+    <div id="letterModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Нет букв</h2>
+            <p>Введите хотя бы одну букву.</p>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var nameInput = document.getElementById('nameInput');
+            var modal = document.getElementById('letterModal');
+            var closeButton = document.getElementsByClassName("close-button")[0];
 
             // Update web app theme based on Telegram theme
             function updateTheme(params) {
@@ -51,57 +94,57 @@
                 // ... Update other elements if needed
             }
 
+            // Show the custom modal dialog
+            function showCustomAlert() {
+                modal.style.display = "block";
+            }
+
+            // When the user clicks on <span> (x), close the modal
+            closeButton.onclick = function() {
+                modal.style.display = "none";
+            };
+
             // Set initial theme
             updateTheme(Telegram.WebApp.themeParams);
 
             // Listen for theme changes
-            Telegram.WebApp.onEvent('themeChanged', function() {
-                updateTheme(Telegram.WebApp.themeParams);
+            Telegram.WebApp.onEvent('themeChanged', updateTheme);
+
+            // Функция проверки введенного значения на наличие хотя бы одной буквы
+            function containsAtLeastOneLetter(input) {
+                return /[a-zA-Zа-яА-ЯёЁ]/.test(input);
+            }
+
+            // Обработчик события клика на основную кнопку
+            Telegram.WebApp.MainButton.onClick(function() {
+                var enteredName = nameInput.value.trim();
+                if (!enteredName) {
+                    showCustomAlert();
+                } else if (!containsAtLeastOneLetter(enteredName)) {
+                    showCustomAlert();
+                } else {
+                    // Всё в порядке, отправляем данные
+                    Telegram.WebApp.sendData(enteredName);
+                }
             });
 
-            // Validate input to check if it contains at least one letter
-            function containsLetter(input) {
-                return /[a-zA-Zа-яА-Я]/.test(input);
-            }
-
-            // Update button visibility and validate input
-            function updateMainButtonVisibility() {
-                var nameValue = nameInput.value.trim();
-                if(containsLetter(nameValue)) {
-                    Telegram.WebApp.MainButton.show();
-                } else {
-                    Telegram.WebApp.MainButton.hide();
-                    if(nameValue !== '' && !isNaN(nameValue)) {
-                        alert('Введите хотя бы одну букву.');
-                    }
-                }
-            }
-
-            // Event listener for input changes
-            nameInput.addEventListener('input', updateMainButtonVisibility);
-
-            // Initialization of MainButton parameters
+            // Настройка основной кнопки при загрузке
+            Telegram.WebApp.MainButton.show();
             Telegram.WebApp.MainButton.text = 'Отправить';
             Telegram.WebApp.MainButton.color = '#34a853';
             Telegram.WebApp.MainButton.textColor = '#ffffff';
 
-            // MainButton click event handler
-            Telegram.WebApp.MainButton.onClick(function() {
-                var name = nameInput.value.trim();
-                if (name && containsLetter(name)) {
-                    // Send the name back to the bot
-                    Telegram.WebApp.sendData(name);
-                } else {
-                    alert('Введите хотя бы одну букву.');
-                }
-            });
-
-            // Initial check to hide MainButton if necessary
-            updateMainButtonVisibility();
-
             // Signal Telegram about the readiness of our Web App
             Telegram.WebApp.ready();
         });
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            var modal = document.getElementById('letterModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
 </body>
 </html>
