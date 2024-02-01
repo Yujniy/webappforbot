@@ -59,36 +59,45 @@
                 updateTheme(Telegram.WebApp.themeParams);
             });
 
-            // Обработчик события изменения текста в поле ввода имени пользователя
-            nameInput.addEventListener('input', function() {
-                updateMainButtonVisibility(); // Обновляем видимость основной кнопки
-            });
+            // Validate input to check if it contains at least one letter
+            function containsLetter(input) {
+                return /[a-zA-Zа-яА-Я]/.test(input);
+            }
 
-            // Функция для обновления видимости MainButton
+            // Update button visibility and validate input
             function updateMainButtonVisibility() {
-                if (nameInput.value.trim()) {
+                var nameValue = nameInput.value.trim();
+                if(containsLetter(nameValue)) {
                     Telegram.WebApp.MainButton.show();
                 } else {
                     Telegram.WebApp.MainButton.hide();
+                    if(nameValue !== '' && !isNaN(nameValue)) {
+                        alert('Введите хотя бы одну букву.');
+                    }
                 }
             }
 
-            // Настройка текста, цветов и видимости основной кнопки
+            // Event listener for input changes
+            nameInput.addEventListener('input', updateMainButtonVisibility);
+
+            // Initialization of MainButton parameters
             Telegram.WebApp.MainButton.text = 'Отправить';
             Telegram.WebApp.MainButton.color = '#34a853';
             Telegram.WebApp.MainButton.textColor = '#ffffff';
-            updateMainButtonVisibility(); // Вызываем изначально, чтобы скрыть кнопку
 
-            // Обработчик события клика на основную кнопку
+            // MainButton click event handler
             Telegram.WebApp.MainButton.onClick(function() {
                 var name = nameInput.value.trim();
-                if (name) {
-                    // Отправка имени обратно в бота
+                if (name && containsLetter(name)) {
+                    // Send the name back to the bot
                     Telegram.WebApp.sendData(name);
                 } else {
-                    alert('Пожалуйста, введите ваше имя.');
+                    alert('Введите хотя бы одну букву.');
                 }
             });
+
+            // Initial check to hide MainButton if necessary
+            updateMainButtonVisibility();
 
             // Signal Telegram about the readiness of our Web App
             Telegram.WebApp.ready();
