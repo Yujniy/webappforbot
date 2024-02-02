@@ -1,132 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор случайных чисел</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
-    <!-- Подключение Telegram WebApp Script -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Подключаем стили Telegram Web App -->
+  <link href="https://telegram.org/js/telegram-web-app.css" rel="stylesheet">
+  <title>Web App</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: start; /* Выравнивание содержимого по началу контейнера */
+      align-items: center; /* Центрирование содержимого по вертикали */
+      height: 100vh; /* Задаем высоту контейнера */
+      padding-left: 20px; /* Отступ слева */
+    }
+    .username {
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Имя пользователя из Телеграм будет отображено здесь -->
-    <div class="header-container">
-        <h1>Генератор случайных чисел</h1>
-        <label class="theme-switcher">
-            <input type="checkbox" id="theme-toggle" class="theme-toggle-checkbox">
-            <div class="theme-toggle-track">
-                <div class="theme-toggle-thumb">
-                    <i class="fi fi-rr-brightness white-icon"></i>
-                </div>
-            </div>
-        </label>
-    </div>
-    <!-- Скрыта кнопка войти/зарегистрироваться -->
-    
-    <label for="minNumber">Минимальное число:</label>
-    <input type="number" id="minNumber" min="0">
-    <label for="maxNumber">Максимальное число:</label>
-    <input type="number" id="maxNumber" min="0">
-    <p id="numberWarning">Вводите числа!</p>
-    <p id="nanWarning" style="display: none;">Вставьте числа!</p>
-    <div id="resultsCountContainer" style="display: none;">
-        <label for="resultsCount">Количество результатов:</label>
-        <input type="number" id="resultsCount" min="1">
-    </div>
-    <div id="multipleResultsContainer">
-        <label for="multipleResults">Несколько результатов:</label>
-        <input type="checkbox" id="multipleResults">
-    </div>
-    <button onclick="generateRandomNumber()">Сгенерировать</button>
-    <p id="result"></p>
-    
-<script>
-    // Функция для обновления шапки веб-приложения именем пользователя
-    function updateUserHeader(username) {
-        const headerContainer = document.querySelector('.header-container');
-        headerContainer.innerHTML += `<h2>Привет, ${username}!</h2>`;
-    }
+  <div class="username" id="username">[Имя пользователя]</div>
 
-    // Функция для генерирования случайного числа
-    function generateRandomNumber() {
-        const minNumber = parseInt(document.getElementById('minNumber').value, 10);
-        const maxNumber = parseInt(document.getElementById('maxNumber').value, 10);
-        const resultDisplay = document.getElementById('result');
-        
-        if (isNaN(minNumber) || isNaN(maxNumber)) {
-            document.getElementById('nanWarning').style.display = 'block';
-            return;
-        } else {
-            document.getElementById('nanWarning').style.display = 'none';
-        }
+  <!-- Подключаем Telegram Web App JS API -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    // Инициализация Web App
+    Telegram.WebApp.ready();
 
-        if (minNumber > maxNumber) {
-            document.getElementById('numberWarning').textContent = 'Максимальное число должно быть больше минимального.';
-            return;
-        } else {
-            document.getElementById('numberWarning').textContent = '';
-        }
+    // Заполнение имени пользователя, полученного от Telegram
+    const init = () => {
+      const user = Telegram.WebApp.initDataUnsafe?.user;
+      if (user && user.first_name) {  // Проверка наличия данных о пользователе
+        document.getElementById('username').textContent = user.first_name;
+      }
+    };
 
-        // Если пользователь хочет сгенерировать несколько чисел
-        const isMultiple = document.getElementById('multipleResults').checked;
-        if (isMultiple) {
-            const resultsCount = parseInt(document.getElementById('resultsCount').value, 10);
-            if (isNaN(resultsCount) || resultsCount <= 0) {
-                document.getElementById('numberWarning').textContent = 'Укажите количество результатов.';
-                return;
-            } else {
-                document.getElementById('numberWarning').textContent = '';
-                const numbers = [];
-                for (let i = 0; i < resultsCount; i++) {
-                    numbers.push(Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber);
-                }
-                resultDisplay.textContent = numbers.join(', ');
-            }
-        } else {
-            // Генерируем одно число
-            const randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
-            resultDisplay.textContent = `Случайное число: ${randomNumber}`;
-        }
-    }
-
-    // Функция для проверки, является ли ввод числом
-    function isNumberKey(evt) {
-        const charCode = (evt.which) ? evt.which : evt.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-            return false;
-        }
-        return true;
-    }
-
-    // Дополнительные функции, которые могут быть необходимы для вашего приложения
-    // ...
-
-    // Инициализация при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.Telegram.WebApp) {
-            Telegram.WebApp.ready();
-
-            const user = Telegram.WebApp.initDataUnsafe.user;
-            if (user) {
-                updateUserHeader(user.first_name);
-            } else {
-                updateUserHeader('Имя пользователя неизвестно');
-            }
-            
-            // Конфигурация темы и другие настройки
-            // ...
-
-            // Дополнительные инициализации и обработчики событий, если они нужны
-            // ...
-        }
-    });
-</script>
+    // Выполнить функцию init при загрузке страницы
+    window.onload = init;
+  </script>
 </body>
 </html>
