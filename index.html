@@ -11,7 +11,7 @@
 <body>
 
 <div id="user-info">
-  <!-- This is where the username will be displayed -->
+  <!-- Username or placeholder will be displayed here -->
 </div>
 
 <script>
@@ -22,10 +22,13 @@ window.onload = () => {
 
   // Access the initDataUnsafe to get the user's data
   const userData = Telegram.WebApp.initDataUnsafe;
-  const username = userData && userData.user && userData.user.username;
+  const user = userData && userData.user;
 
-  // Display the username in the left corner
-  document.getElementById('user-info').innerText = username;
+  // Get the username or fallback to "WebAppUser"
+  const displayName = user && user.username ? user.username : "WebAppUser";
+
+  // Display the user's name or a placeholder in the left corner
+  document.getElementById('user-info').innerText = displayName;
 };
 </script>
 
