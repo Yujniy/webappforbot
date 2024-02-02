@@ -2,113 +2,39 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мини приложение Telegram</title>
+    <title>Веб-приложение</title>
+    <!-- Подключаем скрипт Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Стиль для размещения имени пользователя в левом верхнем углу -->
     <style>
-        :root {
-            --tg-theme-bg-color: #FFFFFF; /* Default background color */
-            --tg-theme-text-color: #000000; /* Default text color */
-            --tg-theme-secondary-bg-color: #F2F3F5; /* Default secondary background color */
-            --tg-theme-section-header-text-color: #565758; /* Default section header text color */
-        }
         body {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
+            padding: 10px;
+            display: flex;
+            justify-content: start;
+            align-items: start;
         }
-        .app-container {
-            text-align: center;
+        .username {
+            font-size: 24px;
+            font-weight: bold;
         }
-    input {
-        margin-bottom: 10px;
-        padding: 10px;
-        font-size: 16px;
-        width: 80%;
-        background-color: var(--tg-theme-secondary-bg-color);
-        color: var(--tg-theme-text-color);
-        border: 1px solid rgba(0, 0, 0, 0.2); /* Updated border color */
-    }
-        /* Дополнительные стили при необходимости */
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <input type="text" id="nameInput" placeholder="Введите ваше имя">
-    </div>
+    <!-- Элемент, где будет отображаться имя пользователя -->
+    <div class="username" id="username"></div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        function containsAtLeastOneLetter(input) {
-            return /[a-zA-Zа-яА-ЯёЁ]/.test(input);
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Убедимся, что веб-приложение инициализировано и получаем информацию о пользователе
+        if (window.Telegram.WebApp.initDataUnsafe) {
+            var user = window.Telegram.WebApp.initDataUnsafe.user;
+            document.getElementById('username').textContent = user.first_name;  // Обновляем элемент именем пользователя
         }
-
-        // Update CSS variables based on Telegram theme
-        function updateTheme(params) {
-            const rootStyle = document.documentElement.style;
-            rootStyle.setProperty('--tg-theme-bg-color', params.bg_color);
-            rootStyle.setProperty('--tg-theme-text-color', params.text_color);
-            rootStyle.setProperty('--tg-theme-secondary-bg-color', params.secondary_bg_color);
-            rootStyle.setProperty('--tg-theme-section-header-text-color', params.section_header_text_color);
-        }
-
-        // Set initial theme
-        if (Telegram.WebApp.themeParams) {
-            updateTheme(Telegram.WebApp.themeParams);
-        }
-
-        // Listen for theme changes
-        Telegram.WebApp.onEvent('themeChanged', function(themeParams) {
-            updateTheme(themeParams);
-        });
-
-        var nameInput = document.getElementById('nameInput');
-
-        // Listen for input changes to control the visibility of the main button
-        nameInput.addEventListener('input', function() {
-            if (nameInput.value.trim()) {
-                Telegram.WebApp.MainButton.show();
-            } else {
-                Telegram.WebApp.MainButton.hide();
-            }
-        });
-
-        // Handle clicking on the main button
-        Telegram.WebApp.MainButton.onClick(function() {
-            var enteredName = nameInput.value.trim();
-            if (!enteredName) {
-                alert('Пожалуйста, введите ваше имя.');
-            } else if (!containsAtLeastOneLetter(enteredName)) {
-                alert('Введите хотя бы одну букву.');
-            } else if (/^\d+$/.test(enteredName)) {
-                alert('К сожалению отправка имени без букв не возможна, добавьте буквы');
-            } else {
-                // Everything is fine, send data
-                Telegram.WebApp.sendData(enteredName);
-            }
-        });
-
-        // Set up the main button visibility on load
-        if (nameInput.value.trim()) {
-            Telegram.WebApp.MainButton.show();
-        } else {
-            Telegram.WebApp.MainButton.hide();
-        }
-
-        Telegram.WebApp.MainButton.text = 'Отправить';
-        Telegram.WebApp.MainButton.color = '#34a853';
-        Telegram.WebApp.MainButton.textColor = '#ffffff';
-
-        // Signal Telegram about the readiness of our Web App
-        Telegram.WebApp.ready();
     });
-</script>
+
+    // Инициализация SDK Telegram Web App
+    Telegram.WebApp.ready();
+    </script>
 </body>
 </html>
