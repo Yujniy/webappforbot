@@ -1,36 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Your Mini App</title>
-
-<!-- Include the Telegram Web App JavaScript API -->
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Web app</title>
+ <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-
-<div id="user-info">
-  <!-- Username or placeholder will be displayed here -->
-</div>
-
-<script>
-// Ensure this script runs after the telegram-web-app.js script is loaded
-window.onload = () => {
-  // Initialize the app
-  Telegram.WebApp.ready();
-
-  // Access the initDataUnsafe to get the user's data
-  const userData = Telegram.WebApp.initDataUnsafe;
-  const user = userData && userData.user;
-
-  // Get the username or fallback to "WebAppUser"
-  const displayName = user && user.username ? user.username : "WebAppUser";
-
-  // Display the user's name or a placeholder in the left corner
-  document.getElementById('user-info').innerText = displayName;
-};
-</script>
-
+ <div id="userName" style="position: absolute; top: 0; left: 0;"></div>
+ <script>
+    // Wait for the script to load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the user's first name
+      var userName = window.Telegram.WebApp.initData.user.first_name;
+      // Display the user's first name
+      document.getElementById("userName").innerText = userName;
+    });
+ </script>
 </body>
 </html>
