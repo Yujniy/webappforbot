@@ -1,40 +1,33 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Веб-приложение</title>
-    <!-- Подключаем скрипт Telegram Web App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Стиль для размещения имени пользователя в левом верхнем углу -->
-    <style>
-        body {
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: start;
-            align-items: start;
-        }
-        .username {
-            font-size: 24px;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Mini App</title>
+
+<!-- Include the Telegram Web App JavaScript API -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <!-- Элемент, где будет отображаться имя пользователя -->
-    <div class="username" id="username"></div>
 
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Убедимся, что веб-приложение инициализировано и получаем информацию о пользователе
-        if (window.Telegram.WebApp.initDataUnsafe) {
-            var user = window.Telegram.WebApp.initDataUnsafe.user;
-            document.getElementById('username').textContent = user.first_name;  // Обновляем элемент именем пользователя
-        }
-    });
+<div id="user-info">
+  <!-- This is where the username will be displayed -->
+</div>
 
-    // Инициализация SDK Telegram Web App
-    Telegram.WebApp.ready();
-    </script>
+<script>
+// Ensure this script runs after the telegram-web-app.js script is loaded
+window.onload = () => {
+  // Initialize the app
+  Telegram.WebApp.ready();
+
+  // Access the initDataUnsafe to get the user's data
+  const userData = Telegram.WebApp.initDataUnsafe;
+  const username = userData && userData.user && userData.user.username;
+
+  // Display the username in the left corner
+  document.getElementById('user-info').innerText = username;
+};
+</script>
+
 </body>
 </html>
