@@ -33,99 +33,70 @@
         }
 
         .mainbtn {
-            font-size: 18px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .history {
-            display: none;
-        }
-    </style>
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-
 <body>
-    <h1>Password Generator</h1>
-    <p>Click the button below to generate a random password:</p>
-    <div id="password"></div>
-    <button id="generateBtn">Generate Password</button>
+  <h1>Password Generator</h1>
+  <p>Click the button below to generate a random password:</p>
+  <div id="password"></div>
+  <button id="generateBtn">Generate Password</button>
+  
+  <button class="mainbtn" id="historyBtn">Password History</button>
+  
+  <div id="historyScreen" style="display: none;">
+    <h2>Generation History</h2>
+    <ul id="historyList"></ul>
+  </div>
 
-    <button class="mainbtn" id="saveBtn">Save Password</button>
-    <button class="mainbtn" id="historyBtn">Password History</button>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    function generatePassword() {
+      const length = 12;
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+      let password = "";
 
-    <div class="history" id="historyScreen">
-        <h2>Generation History</h2>
-        <ul id="historyList"></ul>
-    </div>
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+      }
 
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
-        function generatePassword() {
-            const length = 12;
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-            let password = "";
+      return password;
+    }
 
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * charset.length);
-                password += charset[randomIndex];
-            }
-
-            return password;
-        }
-
-        document.getElementById("generateBtn").addEventListener("click", function () {
-            const password = generatePassword();
-            document.getElementById("password").textContent = password;
-
-            window.Telegram.WebApp.sendData(password);
+    document.getElementById("generateBtn").addEventListener("click", function() {
+      const password = generatePassword();
+      document.getElementById("password").textContent = password;
+      window.Telegram.WebApp.sendData(JSON.stringify({ action: "save_password", password: password }));
+    });
+    
+    document.getElementById("historyBtn").addEventListener("click", function() {
+      window.Telegram.WebApp.sendData(JSON.stringify({ action: "get_history" }));
+    });
+    
+    Telegram.WebApp.onEvent("webAppDataReceived", function(e) {
+      const data = JSON.parse(e.data);
+      if (data.action === "show_history") {
+        const historyList = document.getElementById("historyList");
+        historyList.innerHTML = "";
+        
+        data.history.forEach(function(password) {
+          const listItem = document.createElement("li");
+          listItem.textContent = password;
+          historyList.appendChild(listItem);
         });
-        let history = [];
-
-        document.getElementById("generateBtn").addEventListener("click", function () {
-            const password = generatePassword();
-            document.getElementById("password").textContent = password;
-        });
-
-        document.getElementById("saveBtn").addEventListener("click", function () {
-            const password = document.getElementById("password").textContent;
-            history.push(password);
-            window.Telegram.WebApp.sendData(JSON.stringify({ action: "save_password", password: password }));
-        });
-
-        document.getElementById("historyBtn").addEventListener("click", function () {
-            window.Telegram.WebApp.sendData(JSON.stringify({ action: "get_history" }));
-        });
-
-        Telegram.WebApp.onEvent("viewportChanged", function () {
-            window.Telegram.WebApp.expand();
-        });
-
-        function showHistory(passwordHistory) {
-            history = passwordHistory;
-            const historyList = document.getElementById("historyList");
-            historyList.innerHTML = "";
-
-            history.forEach(function (password) {
-                const listItem = document.createElement("li");
-                listItem.textContent = password;
-                historyList.appendChild(listItem);
-            });
-
-            document.getElementById("historyScreen").style.display = "block";
-        }
-
-        Telegram.WebApp.onEvent("webAppDataReceived", function (e) {
-            const data = JSON.parse(e.data);
-            if (data.action === "show_history") {
-                showHistory(data.history);
-            }
-        });
-    </script>
+        
+        document.getElementById("historyScreen").style.display = "block";
+      }
+    });
+  </script>
 </body>
-
 </html>
