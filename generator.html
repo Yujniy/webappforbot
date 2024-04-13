@@ -1,44 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
+  <title>Password Generator - Telegram Mini App</title>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Подключаем стили Telegram Web App -->
-  <link href="https://telegram.org/js/telegram-web-app.css" rel="stylesheet">
-  <title>Web App</title>
   <style>
     body {
-      display: flex;
-      justify-content: start; /* Выравнивание содержимого по началу контейнера */
-      align-items: center; /* Центрирование содержимого по вертикали */
-      height: 100vh; /* Задаем высоту контейнера */
-      padding-left: 20px; /* Отступ слева */
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
     }
-    .username {
+    
+    h1 {
+      color: #333;
+    }
+    
+    #password {
       font-size: 24px;
       font-weight: bold;
+      margin: 20px 0;
+    }
+    
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="username" id="username">[Имя пользователя]</div>
+  <h1>Password Generator</h1>
+  <p>Click the button below to generate a random password:</p>
+  <div id="password"></div>
+  <button id="generateBtn">Generate Password</button>
 
-  <!-- Подключаем Telegram Web App JS API -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    // Инициализация Web App
-    Telegram.WebApp.ready();
+    function generatePassword() {
+      const length = 12;
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+      let password = "";
 
-    // Заполнение имени пользователя, полученного от Telegram
-    const init = () => {
-      const user = Telegram.WebApp.initDataUnsafe?.user;
-      if (user && user.first_name) {  // Проверка наличия данных о пользователе
-        document.getElementById('username').textContent = user.first_name;
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
       }
-    };
 
-    // Выполнить функцию init при загрузке страницы
-    window.onload = init;
+      return password;
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", function() {
+      const password = generatePassword();
+      document.getElementById("password").textContent = password;
+      
+      window.Telegram.WebApp.sendData(password);
+    });
   </script>
 </body>
 </html>
