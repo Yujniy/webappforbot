@@ -59,46 +59,58 @@
     <button class="mainbtn" id="backBtn">Back</button>
   </div>
 
-  <script>
-    let passwordHistory = [];
+<script>
+  let passwordHistory = [];
 
-    function generatePassword() {
-      const length = 12;
-      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-      let password = "";
+  // Загрузка истории паролей из локального хранилища при загрузке страницы
+  window.addEventListener("load", function() {
+    const storedHistory = localStorage.getItem("passwordHistory");
+    if (storedHistory) {
+      passwordHistory = JSON.parse(storedHistory);
+    }
+  });
 
-      for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charset.length);
-        password += charset[randomIndex];
-      }
+  function generatePassword() {
+    const length = 12;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+    let password = "";
 
-      return password;
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
     }
 
-    document.getElementById("generateBtn").addEventListener("click", function() {
-      const password = generatePassword();
-      document.getElementById("password").textContent = password;
-      passwordHistory.push(password);
+    return password;
+  }
+
+  document.getElementById("generateBtn").addEventListener("click", function() {
+    const password = generatePassword();
+    document.getElementById("password").textContent = password;
+    passwordHistory.push(password);
+
+    // Сохранение истории паролей в локальном хранилище
+    localStorage.setItem("passwordHistory", JSON.stringify(passwordHistory));
+  });
+
+  document.getElementById("historyBtn").addEventListener("click", function() {
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = "";
+
+    passwordHistory.forEach(function(password) {
+      const listItem = document.createElement("li");
+      listItem.textContent = password;
+      historyList.appendChild(listItem);
     });
 
-    document.getElementById("historyBtn").addEventListener("click", function() {
-      const historyList = document.getElementById("historyList");
-      historyList.innerHTML = "";
+    document.getElementById("generatorScreen").style.display = "none";
+    document.getElementById("historyScreen").style.display = "block";
+  });
 
-      passwordHistory.forEach(function(password) {
-        const listItem = document.createElement("li");
-        listItem.textContent = password;
-        historyList.appendChild(listItem);
-      });
+  document.getElementById("backBtn").addEventListener("click", function() {
+    document.getElementById("historyScreen").style.display = "none";
+    document.getElementById("generatorScreen").style.display = "block";
+  });
+</script>
 
-      document.getElementById("generatorScreen").style.display = "none";
-      document.getElementById("historyScreen").style.display = "block";
-    });
-
-    document.getElementById("backBtn").addEventListener("click", function() {
-      document.getElementById("historyScreen").style.display = "none";
-      document.getElementById("generatorScreen").style.display = "block";
-    });
-  </script>
 </body>
 </html>
