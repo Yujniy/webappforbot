@@ -42,6 +42,25 @@
             cursor: pointer;
             margin-top: 20px;
         }
+
+        .star {
+            position: absolute;
+            top: -20px;
+            font-size: 20px;
+            color: #ffcc00;
+            animation: falling 1s linear infinite;
+        }
+
+        @keyframes falling {
+            0% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -83,13 +102,30 @@
     return password;
   }
 
-  document.getElementById("generateBtn").addEventListener("click", function() {
+  function createStar() {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.textContent = "★";
+    star.style.left = Math.random() * window.innerWidth + "px";
+    document.body.appendChild(star);
+
+    setTimeout(function() {
+      star.remove();
+    }, 1000);
+  }
+
+document.getElementById("generateBtn").addEventListener("click", function() {
     const password = generatePassword();
     document.getElementById("password").textContent = password;
     passwordHistory.push(password);
 
     // Сохранение истории паролей в локальном хранилище
     localStorage.setItem("passwordHistory", JSON.stringify(passwordHistory));
+
+    // Создание эффекта падающих звездочек
+    for (let i = 0; i < 20; i++) {
+      setTimeout(createStar, i * 100);
+    }
   });
 
   document.getElementById("historyBtn").addEventListener("click", function() {
@@ -114,3 +150,4 @@
 
 </body>
 </html>
+
