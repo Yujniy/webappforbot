@@ -59,12 +59,13 @@
     <button class="mainbtn" id="backBtn">Back</button>
   </div>
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   let passwordHistory = [];
 
-  // Загрузка истории паролей из локального хранилища при загрузке страницы
+  // Загрузка истории паролей из WebApp Secure Storage при загрузке страницы
   window.addEventListener("load", function() {
-    const storedHistory = localStorage.getItem("passwordHistory");
+    const storedHistory = telegram.WebApp.getData();
     if (storedHistory) {
       passwordHistory = JSON.parse(storedHistory);
     }
@@ -88,8 +89,8 @@
     document.getElementById("password").textContent = password;
     passwordHistory.push(password);
 
-    // Сохранение истории паролей в локальном хранилище
-    localStorage.setItem("passwordHistory", JSON.stringify(passwordHistory));
+    // Сохранение истории паролей в WebApp Secure Storage
+    telegram.WebApp.setData(JSON.stringify(passwordHistory));
   });
 
   document.getElementById("historyBtn").addEventListener("click", function() {
@@ -113,4 +114,5 @@
 </script>
 
 </body>
+
 </html>
