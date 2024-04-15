@@ -59,39 +59,38 @@
     <button class="mainbtn" id="backBtn">Back</button>
   </div>
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
   let passwordHistory = [];
 
-  // Загрузка истории паролей из WebApp Secure Storage при загрузке страницы
+  // Загрузка истории паролей из локального хранилища при загрузке страницы
   window.addEventListener("load", function() {
-    const storedHistory = telegram.WebApp.getData();
+    const storedHistory = localStorage.getItem("passwordHistory");
     if (storedHistory) {
       passwordHistory = JSON.parse(storedHistory);
     }
   });
 
-  function generatePassword() {
-    const length = 12;
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
-    let password = "";
+function generatePassword() {
+  const length = 12;
+  const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
+  let password = "";
 
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      password += charset[randomIndex];
-    }
-
-    return password;
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
   }
 
-  document.getElementById("generateBtn").addEventListener("click", function() {
-    const password = generatePassword();
-    document.getElementById("password").textContent = password;
-    passwordHistory.push(password);
+  // Отправка сгенерированного пароля обратно в бота
+  Telegram.WebApp.sendData(JSON.stringify({action: "save_password", password: password}));
 
-    // Сохранение истории паролей в WebApp Secure Storage
-    telegram.WebApp.setData(JSON.stringify(passwordHistory));
-  });
+  return password;
+}
+
+
+document.getElementById("historyBtn").addEventListener("click", function() {
+  Telegram.WebApp.sendData(JSON.stringify({action: "get_history"}));
+});
+
 
   document.getElementById("historyBtn").addEventListener("click", function() {
     const historyList = document.getElementById("historyList");
@@ -114,5 +113,4 @@
 </script>
 
 </body>
-
 </html>
