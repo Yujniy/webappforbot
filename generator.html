@@ -5,79 +5,132 @@
     <title>Password Generator - Telegram Mini App</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        overflow: hidden;
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-        h1 {
-            color: #333;
-        }
+    h1 {
+        color: #333;
+    }
 
-        #password {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
+    #password {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
 
-        button {
-            font-size: 18px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+    button {
+        font-size: 18px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
 
-        .mainbtn {
-            font-size: 18px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+    .mainbtn {
+        font-size: 18px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
 
-        .star {
-            position: absolute;
-            top: -20px;
-            font-size: 20px;
-            color: #ffcc00;
-            animation: falling 1s linear infinite;
-        }
+    #historyScreen {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
 
-        @keyframes falling {
-            0% {
-                transform: translateY(-20px);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh);
-                opacity: 0;
-            }
-        }
-    </style>
+    #historyList {
+        overflow-y: auto;
+        text-align: left;
+        margin: 0 auto;
+        width: 200px;
+        flex-grow: 1;
+        max-height: calc(100% - 150px); /* Уменьшено значение max-height */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        list-style-type: none;
+        padding: 0;
+    }
+
+    #historyList::-webkit-scrollbar {
+        display: none;
+    }
+
+    .tabs {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        margin-top: 40px;
+        position: relative;
+    }
+
+    .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        position: relative;
+        z-index: 1;
+        transition: color 0.3s ease;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .tab-bg {
+    position: absolute;
+    top: 0;
+    left: var(--tab-bg-offset);
+    width: var(--tab-bg-width);
+    height: 100%;
+    background-color: #007bff;
+    transition: left 0.3s ease, width 0.3s ease;
+    z-index: 0;
+    border-radius: 4px;
+  }
+
+    .tab.active {
+        color: #fff;
+    }
+
+    .tab:not(.active) {
+        color: #007bff;
+    }
+</style>
+
 </head>
 <body>
+  <div class="tabs">
+    <div class="tab-bg"></div>
+    <div class="tab active" id="generatorTab">Generator</div>
+    <div class="tab" id="historyTab">History</div>
+  </div>
+
   <div id="generatorScreen">
     <h1>Password Generator</h1>
     <p>Click the button below to generate a random password:</p>
     <div id="password"></div>
     <button id="generateBtn">Generate Password</button>
-    <button class="mainbtn" id="historyBtn">Password History</button>
   </div>
 
   <div id="historyScreen" style="display: none;">
     <h2>Generation History</h2>
     <ul id="historyList"></ul>
-    <button class="mainbtn" id="backBtn">Back</button>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 <script>
   let passwordHistory = [];
 
@@ -102,19 +155,7 @@
     return password;
   }
 
-  function createStar() {
-    const star = document.createElement("div");
-    star.className = "star";
-    star.textContent = "★";
-    star.style.left = Math.random() * window.innerWidth + "px";
-    document.body.appendChild(star);
-
-    setTimeout(function() {
-      star.remove();
-    }, 1000);
-  }
-
-document.getElementById("generateBtn").addEventListener("click", function() {
+  document.getElementById("generateBtn").addEventListener("click", function() {
     const password = generatePassword();
     document.getElementById("password").textContent = password;
     passwordHistory.push(password);
@@ -122,13 +163,48 @@ document.getElementById("generateBtn").addEventListener("click", function() {
     // Сохранение истории паролей в локальном хранилище
     localStorage.setItem("passwordHistory", JSON.stringify(passwordHistory));
 
-    // Создание эффекта падающих звездочек
-    for (let i = 0; i < 20; i++) {
-      setTimeout(createStar, i * 100);
-    }
+    // Создание эффекта конфетти с использованием canvas-confetti
+    confetti({
+      angle: 60,
+      spread: 55,
+      particleCount: 50,
+      origin: { x: 0, y: 0.5 },
+      colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+    });
+
+    confetti({
+      angle: 120,
+      spread: 55,
+      particleCount: 50,
+      origin: { x: 1, y: 0.5 },
+      colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+    });
   });
 
-  document.getElementById("historyBtn").addEventListener("click", function() {
+  function setActiveTabBg() {
+    const activeTab = document.querySelector(".tab.active");
+    const tabBg = document.querySelector(".tab-bg");
+    const tabWidth = activeTab.offsetWidth;
+    const tabOffset = activeTab.offsetLeft;
+
+    tabBg.style.setProperty("--tab-bg-width", `${tabWidth}px`);
+    tabBg.style.setProperty("--tab-bg-offset", `${tabOffset}px`);
+  }
+
+  setActiveTabBg(); // Вызов функции при загрузке страницы
+
+  function switchTab(tabId) {
+    const tabs = document.querySelectorAll(".tab");
+    const activeTab = document.querySelector(".tab.active");
+    const newActiveTab = document.getElementById(tabId);
+
+    activeTab.classList.remove("active");
+    newActiveTab.classList.add("active");
+
+    setActiveTabBg(); // Вызов функции после переключения табов
+  }
+
+  document.getElementById("historyTab").addEventListener("click", function() {
     const historyList = document.getElementById("historyList");
     historyList.innerHTML = "";
 
@@ -140,14 +216,16 @@ document.getElementById("generateBtn").addEventListener("click", function() {
 
     document.getElementById("generatorScreen").style.display = "none";
     document.getElementById("historyScreen").style.display = "block";
+    switchTab("historyTab");
   });
 
-  document.getElementById("backBtn").addEventListener("click", function() {
+  document.getElementById("generatorTab").addEventListener("click", function() {
     document.getElementById("historyScreen").style.display = "none";
     document.getElementById("generatorScreen").style.display = "block";
+    switchTab("generatorTab");
   });
 </script>
 
+
 </body>
 </html>
-
